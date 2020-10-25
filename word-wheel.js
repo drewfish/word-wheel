@@ -164,6 +164,8 @@ function build_found_words(already_found) {
 				started = true;
 			const unfound = !found_words.includes(word);
 			const is_pangram = word.length == max_word_length;
+			if (!unfound)
+				found_frequency += all_words[word];
 			if (unfound || is_pangram) {
 				finish_cur_string();
 				let span = document.createElement("span");
