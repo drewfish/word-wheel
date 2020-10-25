@@ -5,6 +5,7 @@ var all_words = {};
 var found_words = [];
 var entered_word = "";
 var total_frequency = 0;
+var given_up = false;
 
 // Style.
 // The SVG inner dimensions are 1000x1000.
@@ -84,6 +85,11 @@ function handle_key(event) {
 	}
 
 function enter_word() {
+	if (given_up) {
+		clear_entered_word();
+		return;
+		}
+
 	if (!all_words[entered_word]) {
 		indicate_word_error();
 		}
@@ -119,31 +125,62 @@ function build_found_words(already_found) {
 	let found_frequency = 0.0;
 	let num_max_length_words_found = 0;
 	const max_word_length = pangram.length;
-	found_words.forEach(word => {
-		if (started)
-			cur_string += ", ";
-		else
-			started = true;
-		if (word == entered_word) {
-			finish_cur_string();
-			let span = document.createElement("span");
-			span.setAttribute("class", already_found ? "already-found" : "just-found");
-			span.textContent = word;
-			element.appendChild(span);
-			}
-		else if (word.length == max_word_length) {
-			num_max_length_words_found += 1;
-			finish_cur_string();
-			let span = document.createElement("span");
-			span.setAttribute("class", "max-length");
-			span.textContent = word;
-			element.appendChild(span);
-			}
-		else
-			cur_string += word;
-		found_frequency += all_words[word];
-		});
-	finish_cur_string();
+
+	// Regular version.
+	if (!given_up) {
+		found_words.forEach(word => {
+			if (started)
+				cur_string += ", ";
+			else
+				started = true;
+			if (word == entered_word) {
+				finish_cur_string();
+				let span = document.createElement("span");
+				span.setAttribute("class", already_found ? "already-found" : "just-found");
+				span.textContent = word;
+				element.appendChild(span);
+				}
+			else if (word.length == max_word_length) {
+				num_max_length_words_found += 1;
+				finish_cur_string();
+				let span = document.createElement("span");
+				span.setAttribute("class", "max-length");
+				span.textContent = word;
+				element.appendChild(span);
+				}
+			else
+				cur_string += word;
+			found_frequency += all_words[word];
+			});
+		finish_cur_string();
+		}
+
+	// Given up, showing everything.
+	else {
+		Object.keys(all_words).sort().forEach(word => {
+			if (started)
+				cur_string += ", ";
+			else
+				started = true;
+			const unfound = !found_words.includes(word);
+			const is_pangram = word.length == max_word_length;
+			if (unfound || is_pangram) {
+				finish_cur_string();
+				let span = document.createElement("span");
+				let class_str = "";
+				if (unfound)
+					class_str += "unfound ";
+				if (is_pangram)
+					class_str += "max-length ";
+				span.setAttribute("class", class_str);
+				span.textContent = word;
+				element.appendChild(span);
+				}
+			else
+				cur_string += word;
+			});
+		}
+
 
 	// Show stats.
 	let message =
@@ -155,6 +192,7 @@ function build_found_words(already_found) {
 		message += ` You've found ${percentage}% of the total words by frequency.`;
 		}
 	document.getElementById("status").textContent = message;
+	document.getElementById("give-up").removeAttribute("hidden");
 	}
 
 function indicate_word_error() {
@@ -172,6 +210,12 @@ function clear_word_error_indication() {
 function clear_entered_word() {
 	entered_word = "";
 	document.getElementById("cur-word").textContent = nbsp;
+	}
+
+function give_up() {
+	given_up = true;
+	build_found_words();
+	document.getElementById("give-up").setAttribute("hidden", "hidden");
 	}
 
 function get_puzzle() {
@@ -264,6 +308,7 @@ function start_puzzle(text) {
 
 function start_word_wheel() {
 	document.onkeydown = handle_key;
+	document.getElementById("give-up-link").onclick = give_up;
 	get_puzzle();
 	}
 

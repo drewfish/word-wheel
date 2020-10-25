@@ -58,8 +58,20 @@ span.max-length {
 	color: green;
 	}
 
+span.unfound {
+	color: grey;
+	}
+
+span.unfound.max-length {
+	color: lightgreen;
+	}
+
 div.status {
 	margin-bottom: 1em;
 	margin-top: 0.5em;
+	}
+
+a#give-up-link {
+	text-decoration: none;
 	}
 
