@@ -124,6 +124,10 @@ function build_found_words(already_found) {
 			cur_string += word;
 		});
 	finish_cur_string();
+
+	// Show stats.
+	document.getElementById("status").textContent =
+		`Found ${found_words.length} out of ${all_words.length} words.`;
 	}
 
 function indicate_word_error() {
