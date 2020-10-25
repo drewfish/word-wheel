@@ -31,13 +31,18 @@ table.columns td {
 	}
 
 .wheel-letter {
-	font-size: 100px;
+	font-size: 120px;
 	text-anchor: middle;
 	dominant-baseline: central;
 	}
 
+div.right-column {
+	margin-left: 1em;
+	}
+
 h3 {
 	margin-top: 0;
+	margin-bottom: 0.5em;
 	}
 
 span.just-found {

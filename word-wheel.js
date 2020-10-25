@@ -7,7 +7,7 @@ var entered_word = "";
 
 // Style.
 // The SVG inner dimensions are 1000x1000.
-const letter_circle_radius = 80;
+const letter_circle_radius = 100;
 const letter_center_to_baseline = 0;
 const wheel_radius = (1000 - letter_circle_radius - 200) / 2;
 const svgNS = "http://www.w3.org/2000/svg";
