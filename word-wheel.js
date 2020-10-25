@@ -69,6 +69,16 @@ function get_puzzle() {
 		}
 	}
 
+function scramble_word(word) {
+	let scrambled_word = "";
+	while (word.length > 0) {
+		let index = Math.floor(Math.random() * word.length);
+		scrambled_word += word[index];
+		word = word.slice(0, index) + word.slice(index + 1);
+		}
+	return scrambled_word;
+	}
+
 function start_puzzle(text) {
 	log("Got puzzle.");
 	// Parse the puzzle.
@@ -105,6 +115,7 @@ function start_puzzle(text) {
 	// The rest of the letters.
 	let key_index = pangram.indexOf(key_letter);
 	let remaining_letters = pangram.substr(0, key_index) + pangram.substr(key_index + 1);
+	remaining_letters = scramble_word(remaining_letters);
 	const num_remaining_letters = remaining_letters.length;
 	for (let i = 0; i < num_remaining_letters; ++i) {
 		let radians = i * (2 * Math.PI) / num_remaining_letters;
