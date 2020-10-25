@@ -54,6 +54,10 @@ span.already-found {
 	color: red;
 	}
 
+span.max-length {
+	color: green;
+	}
+
 div.status {
 	margin-bottom: 1em;
 	margin-top: 0.5em;

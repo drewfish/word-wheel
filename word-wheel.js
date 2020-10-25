@@ -131,11 +131,17 @@ function build_found_words(already_found) {
 			span.textContent = word;
 			element.appendChild(span);
 			}
+		else if (word.length == max_word_length) {
+			num_max_length_words_found += 1;
+			finish_cur_string();
+			let span = document.createElement("span");
+			span.setAttribute("class", "max-length");
+			span.textContent = word;
+			element.appendChild(span);
+			}
 		else
 			cur_string += word;
 		found_frequency += all_words[word];
-		if (word.length == max_word_length)
-			num_max_length_words_found += 1;
 		});
 	finish_cur_string();
 
