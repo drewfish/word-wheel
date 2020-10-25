@@ -133,20 +133,21 @@ function build_found_words(already_found) {
 				cur_string += ", ";
 			else
 				started = true;
-			if (word == entered_word) {
+			let is_entered_word = word == entered_word;
+			let is_pangram = word.length == max_word_length;
+			if (is_entered_word || is_pangram) {
 				finish_cur_string();
 				let span = document.createElement("span");
-				span.setAttribute("class", already_found ? "already-found" : "just-found");
+				let class_str = "";
+				if (is_entered_word)
+					class_str += (already_found ? "already-found" : "just-found") + " ";
+				if (is_pangram)
+					class_str += "max-length ";
+				span.setAttribute("class", class_str);
 				span.textContent = word;
 				element.appendChild(span);
-				}
-			else if (word.length == max_word_length) {
-				num_max_length_words_found += 1;
-				finish_cur_string();
-				let span = document.createElement("span");
-				span.setAttribute("class", "max-length");
-				span.textContent = word;
-				element.appendChild(span);
+				if (is_pangram)
+					num_max_length_words_found += 1;
 				}
 			else
 				cur_string += word;
@@ -177,6 +178,8 @@ function build_found_words(already_found) {
 				span.setAttribute("class", class_str);
 				span.textContent = word;
 				element.appendChild(span);
+				if (is_pangram)
+					num_max_length_words_found += 1;
 				}
 			else
 				cur_string += word;
