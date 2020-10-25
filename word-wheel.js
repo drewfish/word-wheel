@@ -15,6 +15,7 @@ const error_flash_ms = 500;
 
 // Misc.
 const nbsp = "\u00A0";
+var error_timeout_id = 0;
 
 // Override in local.js:
 var puzzle_url = "cur-puzzle";
@@ -48,6 +49,12 @@ function handle_key(event) {
 	if (key == 0)
 		key = event.which;
 	key = String.fromCharCode(key).toLowerCase();
+
+	// Any key will stop the error flash.
+	if (error_timeout_id != 0) {
+		clearTimeout(error_timeout_id);
+		clear_word_error_indication();
+		}
 
 	if (key == "\b") {
 		entered_word = entered_word.slice(0, entered_word.length - 1);
@@ -132,13 +139,14 @@ function build_found_words(already_found) {
 
 function indicate_word_error() {
 	document.getElementById("cur-word").setAttribute("error", "error");
-	setTimeout(clear_word_error_indication, error_flash_ms);
+	error_timeout_id = setTimeout(clear_word_error_indication, error_flash_ms);
 	}
 
 function clear_word_error_indication() {
 	document.getElementById("cur-word").removeAttribute("error");
 	clear_entered_word();
 	build_found_words(false);
+	error_timeout_id = 0;
 	}
 
 function clear_entered_word() {
