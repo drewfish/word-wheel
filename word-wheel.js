@@ -1,9 +1,10 @@
 // Game play.
 var pangram = '';
 var key_letter = '';
-var all_words = [];
+var all_words = {};
 var found_words = [];
 var entered_word = "";
+var total_frequency = 0;
 
 // Style.
 // The SVG inner dimensions are 1000x1000.
@@ -83,7 +84,7 @@ function handle_key(event) {
 	}
 
 function enter_word() {
-	if (!all_words.includes(entered_word)) {
+	if (!all_words[entered_word]) {
 		indicate_word_error();
 		}
 
@@ -115,6 +116,9 @@ function build_found_words(already_found) {
 			}
 		};
 	let started = false;
+	let found_frequency = 0.0;
+	let num_max_length_words_found = 0;
+	const max_word_length = pangram.length;
 	found_words.forEach(word => {
 		if (started)
 			cur_string += ", ";
@@ -129,12 +133,22 @@ function build_found_words(already_found) {
 			}
 		else
 			cur_string += word;
+		found_frequency += all_words[word];
+		if (word.length == max_word_length)
+			num_max_length_words_found += 1;
 		});
 	finish_cur_string();
 
 	// Show stats.
-	document.getElementById("status").textContent =
-		`Found ${found_words.length} out of ${all_words.length} words.`;
+	let message =
+		`Found ${found_words.length} out of ${Object.keys(all_words).length} words.`;
+	if (num_max_length_words_found > 0)
+		message += ` You've found a ${max_word_length}-letter word.`;
+	if (total_frequency > 0) {
+		let percentage = Math.floor(100 * found_frequency / total_frequency);
+		message += ` You've found ${percentage}% of the total words by frequency.`;
+		}
+	document.getElementById("status").textContent = message;
 	}
 
 function indicate_word_error() {
@@ -187,10 +201,20 @@ function scramble_word(word) {
 
 function start_puzzle(text) {
 	log("Got puzzle.");
+
 	// Parse the puzzle.
 	let lines = text.split('\n');
 	[pangram, key_letter] = lines.shift().split(' ');
-	all_words = lines.map(line => line.split(' ')[0]);
+	all_words = {};
+	total_frequency = 0.0;
+	lines.forEach(line => {
+		let fields = line.split(' ');
+		if (fields.length == 0 || fields[0].length == 0)
+			return;
+		let frequency = fields.length > 1 ? parseFloat(fields[1]) : NaN;
+		all_words[fields[0]] = frequency;
+		total_frequency += frequency;
+		});
 
 	// Start building the wheel.
 	let wheel = document.getElementById("wheel");
