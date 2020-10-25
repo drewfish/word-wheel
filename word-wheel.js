@@ -2,6 +2,8 @@
 var pangram = '';
 var key_letter = '';
 var all_words = [];
+var found_words = [];
+var entered_word = "";
 
 // Style.
 // The SVG inner dimensions are 1000x1000.
@@ -9,6 +11,10 @@ const letter_circle_radius = 80;
 const letter_center_to_baseline = 0;
 const wheel_radius = (1000 - letter_circle_radius - 200) / 2;
 const svgNS = "http://www.w3.org/2000/svg";
+const error_flash_ms = 500;
+
+// Misc.
+const nbsp = "\u00A0";
 
 // Override in local.js:
 var puzzle_url = "cur-puzzle";
@@ -24,7 +30,7 @@ function log(message) {
 
 function set_status(message) {
 	if (!message)
-		message = "\u00A0";
+		message = nbsp;
 	document.getElementById("status").textContent = message;
 	}
 
@@ -33,19 +39,107 @@ function handle_key(event) {
 	if (!event)
 		event = window.event;
 
+	if (event.ctrlKey || event.altKey || event.metaKey)
+		return;
+
 	let handled = false;
 
 	let key = event.keyCode;
 	if (key == 0)
 		key = event.which;
-	key = String.fromCharCode(key);
+	key = String.fromCharCode(key).toLowerCase();
 
-	//***
+	if (key == "\b") {
+		entered_word = entered_word.slice(0, entered_word.length - 1);
+		let cur_word = document.getElementById("cur-word");
+		if (entered_word.length == 0)
+			cur_word.textContent = nbsp;
+		else
+			cur_word.textContent = entered_word;
+		handled = true;
+		}
+	else if (key.length == 1 && key >= "a" && key <= "z") {
+		let cur_word = document.getElementById("cur-word");
+		entered_word += key;
+		cur_word.textContent = entered_word;
+		handled = true;
+		}
+	else if (key == "\r") {
+		enter_word();
+		handled = true;
+		}
 
 	if (handled) {
 		event.preventDefault();
 		event.stopPropagation();
 		}
+	}
+
+function enter_word() {
+	if (!all_words.includes(entered_word)) {
+		indicate_word_error();
+		}
+
+	else if (found_words.includes(entered_word)) {
+		build_found_words(true);
+		clear_entered_word();
+		}
+
+	else {
+		found_words.push(entered_word);
+		found_words.sort();
+		build_found_words(false);
+		clear_entered_word();
+		}
+	}
+
+function build_found_words(already_found) {
+	// Clear existing words.
+	let element = document.getElementById("found-words");
+	while (element.firstChild)
+		element.removeChild(element.firstChild);
+
+	// Rebuild the words.
+	let cur_string = "";
+	function finish_cur_string() {
+		if (cur_string.length > 0) {
+			element.appendChild(document.createTextNode(cur_string));
+			cur_string = "";
+			}
+		};
+	let started = false;
+	found_words.forEach(word => {
+		if (started)
+			cur_string += ", ";
+		else
+			started = true;
+		if (word == entered_word) {
+			finish_cur_string();
+			let span = document.createElement("span");
+			span.setAttribute("class", already_found ? "already-found" : "just-found");
+			span.textContent = word;
+			element.appendChild(span);
+			}
+		else
+			cur_string += word;
+		});
+	finish_cur_string();
+	}
+
+function indicate_word_error() {
+	document.getElementById("cur-word").setAttribute("error", "error");
+	setTimeout(clear_word_error_indication, error_flash_ms);
+	}
+
+function clear_word_error_indication() {
+	document.getElementById("cur-word").removeAttribute("error");
+	clear_entered_word();
+	build_found_words(false);
+	}
+
+function clear_entered_word() {
+	entered_word = "";
+	document.getElementById("cur-word").textContent = nbsp;
 	}
 
 function get_puzzle() {
@@ -127,7 +221,7 @@ function start_puzzle(text) {
 	}
 
 function start_word_wheel() {
-	document.onkeypress = handle_key;
+	document.onkeydown = handle_key;
 	get_puzzle();
 	}
 

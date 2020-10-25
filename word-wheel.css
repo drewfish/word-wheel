@@ -13,6 +13,17 @@ table.columns td {
 	padding-top: 0;
 	}
 
+#cur-word {
+	font-size: 150%;
+	border-color: #DDD;
+	border-style: solid;
+	border-width: 2px;
+	}
+
+#cur-word[error] {
+	background-color: #F88;
+	}
+
 .letter-circle {
 	fill: none;
 	stroke: black;
@@ -27,6 +38,15 @@ table.columns td {
 
 h3 {
 	margin-top: 0;
+	}
+
+span.just-found {
+	font-weight: bold;
+	}
+
+span.already-found {
+	font-weight: bold;
+	color: red;
 	}
 
 div.status {
