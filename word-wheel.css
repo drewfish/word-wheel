@@ -1,0 +1,37 @@
+html {
+	font-family: sans-serif;
+	}
+
+div.centerer {
+	margin-left: auto;
+	margin-right: auto;
+	width: 53em;
+	}
+
+table.columns td {
+	vertical-align: top;
+	padding-top: 0;
+	}
+
+.letter-circle {
+	fill: none;
+	stroke: black;
+	stroke-width: 12;
+	}
+
+.wheel-letter {
+	font-size: 100px;
+	text-anchor: middle;
+	dominant-baseline: central;
+	}
+
+h3 {
+	margin-top: 0;
+	}
+
+div.status {
+	font-size: 120%;
+	font-family: "Arial";
+	margin-bottom: 1em;
+	}
+

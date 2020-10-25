@@ -1,0 +1,37 @@
+<html>
+
+<head>
+	<title> Word Wheel </title>
+	<link rel="stylesheet" href="word-wheel.css" />
+	<script type="text/javascript" src="word-wheel.js"></script>
+	<script type="text/javascript" src="local.js"></script>
+</head>
+
+<body onload="start_word_wheel()"><div class="centerer">
+	<h1 id="title">Word Wheel</h1>
+
+	<table class="columns"><tr>
+		<td>
+			<table class="left-column">
+				<tr><td>
+					<div class="cur-word">&nbsp;</div>
+				</td></tr>
+				<tr><td>
+					<svg id="wheel" width="600" height="600" viewBox="0 0 1000 1000"></svg>
+				</td></tr>
+			</table>
+		</td>
+		<td>
+			<div class="right-column">
+				<h3> Found words: </h3>
+				<div class="found-words"></div>
+				<div class="status">
+					<span id="status">&nbsp;</span>
+				</div>
+			</div>
+		</td>
+	</tr></table>
+
+</div></body>
+</html>
+
