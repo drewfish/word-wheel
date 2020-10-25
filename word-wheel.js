@@ -84,7 +84,7 @@ function start_puzzle(text) {
 	// Parse the puzzle.
 	let lines = text.split('\n');
 	[pangram, key_letter] = lines.shift().split(' ');
-	all_words = lines;
+	all_words = lines.map(line => line.split(' ')[0]);
 
 	// Start building the wheel.
 	let wheel = document.getElementById("wheel");
