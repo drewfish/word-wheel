@@ -198,6 +198,10 @@ function build_found_words(already_found) {
 		}
 	document.getElementById("status").textContent = message;
 	document.getElementById("give-up").removeAttribute("hidden");
+
+	// Nobody ever gets *all* the words, but in case someone does...
+	if (found_words.length >= Object.keys(all_words).length)
+		document.getElementById("give-up").setAttribute("hidden", "hidden");
 	}
 
 function indicate_word_error() {
