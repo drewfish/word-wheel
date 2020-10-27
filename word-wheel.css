@@ -45,24 +45,29 @@ h3 {
 	margin-bottom: 0.5em;
 	}
 
-span.just-found {
+span#found-words a {
+	text-decoration: none;
+	color: black;
+	}
+
+span#found-words a.just-found {
 	font-weight: bold;
 	}
 
-span.already-found {
+span#found-words a.already-found {
 	font-weight: bold;
 	color: red;
 	}
 
-span.max-length {
+span#found-words a.max-length {
 	color: green;
 	}
 
-span.unfound {
+span#found-words a.unfound {
 	color: grey;
 	}
 
-span.unfound.max-length {
+span#found-words a.unfound.max-length {
 	color: lightgreen;
 	}
 

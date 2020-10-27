@@ -21,6 +21,7 @@ var error_timeout_id = 0;
 
 // Override in local.js:
 var puzzle_url = "cur-puzzle";
+var dictionary_url_prefix = "https://en.wiktionary.org/wiki/";
 var logging_enabled = false;
 
 
@@ -114,77 +115,46 @@ function build_found_words(already_found) {
 		element.removeChild(element.firstChild);
 
 	// Rebuild the words.
-	let cur_string = "";
-	function finish_cur_string() {
-		if (cur_string.length > 0) {
-			element.appendChild(document.createTextNode(cur_string));
-			cur_string = "";
-			}
-		};
 	let started = false;
 	let found_frequency = 0.0;
 	let num_max_length_words_found = 0;
 	const max_word_length = pangram.length;
 
-	// Regular version.
-	if (!given_up) {
-		found_words.forEach(word => {
-			if (started)
-				cur_string += ", ";
-			else
-				started = true;
-			let is_entered_word = word == entered_word;
-			let is_pangram = word.length == max_word_length;
-			if (is_entered_word || is_pangram) {
-				finish_cur_string();
-				let span = document.createElement("span");
-				let class_str = "";
-				if (is_entered_word)
-					class_str += (already_found ? "already-found" : "just-found") + " ";
-				if (is_pangram)
-					class_str += "max-length ";
-				span.setAttribute("class", class_str);
-				span.textContent = word;
-				element.appendChild(span);
-				if (is_pangram)
-					num_max_length_words_found += 1;
-				}
-			else
-				cur_string += word;
-			found_frequency += all_words[word];
-			});
-		finish_cur_string();
-		}
+	// Add all the words.
+	let words_to_show = given_up ? Object.keys(all_words).sort() : found_words;
+	words_to_show.forEach(word => {
+		// Comma.
+		if (started)
+			element.appendChild(document.createTextNode(", "));
+		else
+			started = true;
 
-	// Given up, showing everything.
-	else {
-		Object.keys(all_words).sort().forEach(word => {
-			if (started)
-				cur_string += ", ";
-			else
-				started = true;
-			const unfound = !found_words.includes(word);
-			const is_pangram = word.length == max_word_length;
+		// Word.
+		let span = document.createElement("a");
+		let class_str = "";
+		if (!given_up) {
+			let is_entered_word = word == entered_word;
+			if (is_entered_word)
+				class_str += (already_found ? "already-found " : "just-found ") + " ";
+			found_frequency += all_words[word];
+			}
+		else {
+			let unfound = !found_words.includes(word);
+			if (unfound)
+				class_str += "unfound ";
 			if (!unfound)
 				found_frequency += all_words[word];
-			if (unfound || is_pangram) {
-				finish_cur_string();
-				let span = document.createElement("span");
-				let class_str = "";
-				if (unfound)
-					class_str += "unfound ";
-				if (is_pangram)
-					class_str += "max-length ";
-				span.setAttribute("class", class_str);
-				span.textContent = word;
-				element.appendChild(span);
-				if (is_pangram)
-					num_max_length_words_found += 1;
-				}
-			else
-				cur_string += word;
-			});
-		}
+			}
+		let is_pangram = word.length == max_word_length;
+		if (is_pangram)
+			class_str += "max-length ";
+		span.setAttribute("class", class_str);
+		span.setAttribute("href", dictionary_url_prefix + word);
+		span.textContent = word;
+		element.appendChild(span);
+		if (is_pangram)
+			num_max_length_words_found += 1;
+		});
 
 
 	// Show stats.
