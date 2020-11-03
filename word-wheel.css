@@ -30,6 +30,10 @@ table.columns td {
 	stroke-width: 12;
 	}
 
+.letter-circle[error] {
+	fill: #F88;
+	}
+
 .wheel-letter {
 	font-size: 120px;
 	text-anchor: middle;

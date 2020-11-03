@@ -92,7 +92,7 @@ function enter_word() {
 		}
 
 	if (!all_words[entered_word]) {
-		indicate_word_error();
+		indicate_word_error(entered_word);
 		}
 
 	else if (found_words.includes(entered_word)) {
@@ -174,13 +174,16 @@ function build_found_words(already_found) {
 		document.getElementById("give-up").setAttribute("hidden", "hidden");
 	}
 
-function indicate_word_error() {
+function indicate_word_error(entered_word) {
 	document.getElementById("cur-word").setAttribute("error", "error");
+	if (entered_word.indexOf(key_letter) < 0)
+		document.getElementById("key-letter-circle").setAttribute("error", "error");
 	error_timeout_id = setTimeout(clear_word_error_indication, error_flash_ms);
 	}
 
 function clear_word_error_indication() {
 	document.getElementById("cur-word").removeAttribute("error");
+	document.getElementById("key-letter-circle").removeAttribute("error");
 	clear_entered_word();
 	build_found_words(false);
 	error_timeout_id = 0;
@@ -248,13 +251,15 @@ function start_puzzle(text) {
 	// Start building the wheel.
 	let wheel = document.getElementById("wheel");
 	const [wheel_width, wheel_height] = [ 1000, 1000 ];
-	function add_letter(letter, x, y) {
+	function add_letter(letter, x, y, is_key) {
 		// Circle.
 		let circle = document.createElementNS(svgNS, 'circle');
 		circle.setAttribute('class', 'letter-circle');
 		circle.setAttribute('cx', x.toString());
 		circle.setAttribute('cy', y.toString());
 		circle.setAttribute('r', letter_circle_radius.toString());
+		if (is_key)
+			circle.setAttribute('id', 'key-letter-circle');
 		wheel.appendChild(circle);
 
 		// Letter text.
@@ -269,7 +274,7 @@ function start_puzzle(text) {
 		}
 
 	// Key letter.
-	add_letter(key_letter, wheel_width / 2, wheel_height / 2);
+	add_letter(key_letter, wheel_width / 2, wheel_height / 2, true);
 
 	// The rest of the letters.
 	let key_index = pangram.indexOf(key_letter);
@@ -281,7 +286,8 @@ function start_puzzle(text) {
 		add_letter(
 			remaining_letters[i],
 			wheel_width / 2 + wheel_radius * Math.cos(radians),
-			wheel_height / 2 - wheel_radius * Math.sin(radians));
+			wheel_height / 2 - wheel_radius * Math.sin(radians),
+			false);
 		}
 	}
 
