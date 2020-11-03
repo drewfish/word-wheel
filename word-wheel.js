@@ -108,6 +108,21 @@ function enter_word() {
 		}
 	}
 
+function is_a_pangram(word) {
+	if (word.length != pangram.length)
+		return false;
+	let letters_left = pangram;
+	for (let i = 0; i < word.length; ++i) {
+		let letter = word[i];
+		let letter_index = letters_left.indexOf(letter);
+		if (letter_index < 0)
+			return false;
+		letters_left =
+			letters_left.substr(0, letter_index) + letters_left.substr(letter_index + 1);
+		}
+	return true;
+	}
+
 function build_found_words(already_found) {
 	// Clear existing words.
 	let element = document.getElementById("found-words");
@@ -117,7 +132,7 @@ function build_found_words(already_found) {
 	// Rebuild the words.
 	let started = false;
 	let found_frequency = 0.0;
-	let num_max_length_words_found = 0;
+	let num_pangrams_found = 0;
 	const max_word_length = pangram.length;
 
 	// Add all the words.
@@ -145,7 +160,7 @@ function build_found_words(already_found) {
 			if (!unfound)
 				found_frequency += all_words[word];
 			}
-		let is_pangram = word.length == max_word_length;
+		let is_pangram = is_a_pangram(word);
 		if (is_pangram)
 			class_str += "max-length ";
 		span.setAttribute("class", class_str);
@@ -153,15 +168,15 @@ function build_found_words(already_found) {
 		span.textContent = word;
 		element.appendChild(span);
 		if (is_pangram)
-			num_max_length_words_found += 1;
+			num_pangrams_found += 1;
 		});
 
 
 	// Show stats.
 	let message =
 		`Found ${found_words.length} out of ${Object.keys(all_words).length} words.`;
-	if (num_max_length_words_found > 0)
-		message += ` You've found a ${max_word_length}-letter word.`;
+	if (num_pangrams_found > 0)
+		message += ` You've found a pangram.`;
 	if (total_frequency > 0) {
 		let percentage = Math.floor(100 * found_frequency / total_frequency);
 		message += ` You've found ${percentage}% of the total words by frequency.`;
