@@ -78,6 +78,10 @@ function handle_key(event) {
 		enter_word();
 		handled = true;
 		}
+	else if (key == " ") {
+		scramble_wheel();
+		handled = true;
+		}
 
 	if (handled) {
 		event.preventDefault();
@@ -246,24 +250,7 @@ function scramble_word(word) {
 	return scrambled_word;
 	}
 
-function start_puzzle(text) {
-	log("Got puzzle.");
-
-	// Parse the puzzle.
-	let lines = text.split('\n');
-	[pangram, key_letter] = lines.shift().split(' ');
-	all_words = {};
-	total_frequency = 0.0;
-	lines.forEach(line => {
-		let fields = line.split(' ');
-		if (fields.length == 0 || fields[0].length == 0)
-			return;
-		let frequency = fields.length > 1 ? parseFloat(fields[1]) : NaN;
-		all_words[fields[0]] = frequency;
-		total_frequency += frequency;
-		});
-
-	// Start building the wheel.
+function build_wheel() {
 	let wheel = document.getElementById("wheel");
 	const [wheel_width, wheel_height] = [ 1000, 1000 ];
 	function add_letter(letter, x, y, is_key) {
@@ -304,6 +291,35 @@ function start_puzzle(text) {
 			wheel_height / 2 - wheel_radius * Math.sin(radians),
 			false);
 		}
+	}
+
+function scramble_wheel() {
+	// Clear current wheel.
+	let wheel = document.getElementById("wheel");
+	while (wheel.firstChild)
+		wheel.removeChild(wheel.firstChild);
+
+	build_wheel();
+	}
+
+function start_puzzle(text) {
+	log("Got puzzle.");
+
+	// Parse the puzzle.
+	let lines = text.split('\n');
+	[pangram, key_letter] = lines.shift().split(' ');
+	all_words = {};
+	total_frequency = 0.0;
+	lines.forEach(line => {
+		let fields = line.split(' ');
+		if (fields.length == 0 || fields[0].length == 0)
+			return;
+		let frequency = fields.length > 1 ? parseFloat(fields[1]) : NaN;
+		all_words[fields[0]] = frequency;
+		total_frequency += frequency;
+		});
+
+	build_wheel();
 	}
 
 function start_word_wheel() {
