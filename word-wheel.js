@@ -171,7 +171,7 @@ function build_found_words(already_found) {
 		span.setAttribute("href", dictionary_url_prefix + word);
 		span.textContent = word;
 		element.appendChild(span);
-		if (is_pangram)
+		if (is_pangram && found_words.includes(word))
 			num_pangrams_found += 1;
 		});
 
@@ -179,8 +179,12 @@ function build_found_words(already_found) {
 	// Show stats.
 	let message =
 		`Found ${found_words.length} out of ${Object.keys(all_words).length} words.`;
-	if (num_pangrams_found > 0)
-		message += ` You've found a pangram.`;
+	if (num_pangrams_found > 0) {
+		if (num_pangrams_found > 1)
+			message += ` You've found ${num_pangrams_found} pangrams.`;
+		else
+			message += ` You've found a pangram.`;
+		}
 	if (total_frequency > 0) {
 		let percentage = Math.floor(100 * found_frequency / total_frequency);
 		message += ` You've found ${percentage}% of the total words by frequency.`;
