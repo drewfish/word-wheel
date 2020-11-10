@@ -6,6 +6,7 @@ var found_words = [];
 var entered_word = "";
 var total_frequency = 0;
 var total_points = 0;
+var point_words = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
 var given_up = false;
 
 // Style.
@@ -143,6 +144,9 @@ function build_found_words(already_found) {
 	let found_frequency = 0.0;
 	let num_pangrams_found = 0;
 	let found_points = 0;
+	let found_point_words = [];
+	for (let i = 0; i < point_words.length; ++i)
+		found_point_words[i] = 0;
 	const max_word_length = pangram.length;
 
 	// Add all the words.
@@ -162,7 +166,9 @@ function build_found_words(already_found) {
 			if (is_entered_word)
 				class_str += (already_found ? "already-found " : "just-found ") + " ";
 			found_frequency += all_words[word];
-			found_points += word_points(word);
+			let points = word_points(word);
+			found_points += points;
+			found_point_words[points] += 1;
 			}
 		else {
 			let unfound = !found_words.includes(word);
@@ -170,7 +176,9 @@ function build_found_words(already_found) {
 				class_str += "unfound ";
 			if (!unfound) {
 				found_frequency += all_words[word];
-				found_points += word_points(word);
+				let points = word_points(word);
+				found_points += points;
+				found_point_words[points] += 1;
 				}
 			}
 		let is_pangram = is_a_pangram(word);
@@ -205,6 +213,18 @@ function build_found_words(already_found) {
 		}
 	document.getElementById("status").textContent = message;
 	document.getElementById("give-up").removeAttribute("hidden");
+
+	// Point totals.
+	let point_totals_div = document.getElementById("point-totals");
+	while (point_totals_div.firstChild)
+		point_totals_div.removeChild(point_totals_div.firstChild);
+	for (let i = 0; i < point_words.length; ++i) {
+		if (point_words[i] > 0) {
+			let div = document.createElement("div");
+			div.textContent = `${i}-point words: ${found_point_words[i]} out of ${point_words[i]}`;
+			point_totals_div.appendChild(div);
+			}
+		}
 
 	// Nobody ever gets *all* the words, but in case someone does...
 	if (found_words.length >= Object.keys(all_words).length)
@@ -336,8 +356,11 @@ function start_puzzle(text) {
 		all_words[fields[0]] = frequency;
 		total_frequency += frequency;
 		// Word points (but only if frequencies are relative).
-		if (frequency > 0.0 && frequency < 1.0)
-			total_points += word_points(fields[0]);
+		if (frequency > 0.0 && frequency < 1.0) {
+			let points = word_points(fields[0]);
+			total_points += points;
+			point_words[points] += 1;
+			}
 		});
 
 	build_wheel();

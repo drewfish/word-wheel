@@ -80,6 +80,10 @@ div.status {
 	margin-top: 0.5em;
 	}
 
+div#point-totals {
+	margin-bottom: 1em;
+	}
+
 a#give-up-link {
 	text-decoration: none;
 	}
