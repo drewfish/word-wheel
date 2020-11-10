@@ -5,6 +5,7 @@ var all_words = {};
 var found_words = [];
 var entered_word = "";
 var total_frequency = 0;
+var total_points = 0;
 var given_up = false;
 
 // Style.
@@ -127,6 +128,10 @@ function is_a_pangram(word) {
 	return true;
 	}
 
+function word_points(word) {
+	return Math.floor(-Math.log10(all_words[word]));
+	}
+
 function build_found_words(already_found) {
 	// Clear existing words.
 	let element = document.getElementById("found-words");
@@ -137,6 +142,7 @@ function build_found_words(already_found) {
 	let started = false;
 	let found_frequency = 0.0;
 	let num_pangrams_found = 0;
+	let found_points = 0;
 	const max_word_length = pangram.length;
 
 	// Add all the words.
@@ -156,13 +162,16 @@ function build_found_words(already_found) {
 			if (is_entered_word)
 				class_str += (already_found ? "already-found " : "just-found ") + " ";
 			found_frequency += all_words[word];
+			found_points += word_points(word);
 			}
 		else {
 			let unfound = !found_words.includes(word);
 			if (unfound)
 				class_str += "unfound ";
-			if (!unfound)
+			if (!unfound) {
 				found_frequency += all_words[word];
+				found_points += word_points(word);
+				}
 			}
 		let is_pangram = is_a_pangram(word);
 		if (is_pangram)
@@ -171,6 +180,9 @@ function build_found_words(already_found) {
 		span.setAttribute("href", dictionary_url_prefix + word);
 		span.textContent = word;
 		element.appendChild(span);
+
+		element.appendChild(document.createTextNode(` (${word_points(word)})`));
+
 		if (is_pangram && found_words.includes(word))
 			num_pangrams_found += 1;
 		});
@@ -179,6 +191,8 @@ function build_found_words(already_found) {
 	// Show stats.
 	let message =
 		`Found ${found_words.length} out of ${Object.keys(all_words).length} words.`;
+	if (found_points > 0 && total_points > 0)
+		message += `  You have ${found_points} points (out of ${total_points} total).`;
 	if (num_pangrams_found > 0) {
 		if (num_pangrams_found > 1)
 			message += ` You've found ${num_pangrams_found} pangrams.`;
@@ -321,6 +335,9 @@ function start_puzzle(text) {
 		let frequency = fields.length > 1 ? parseFloat(fields[1]) : NaN;
 		all_words[fields[0]] = frequency;
 		total_frequency += frequency;
+		// Word points (but only if frequencies are relative).
+		if (frequency > 0.0 && frequency < 1.0)
+			total_points += word_points(fields[0]);
 		});
 
 	build_wheel();
