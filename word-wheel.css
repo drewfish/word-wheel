@@ -75,6 +75,10 @@ span#found-words a.unfound.max-length {
 	color: lightgreen;
 	}
 
+span.word-points {
+	color: grey;
+	}
+
 div.status {
 	margin-bottom: 1em;
 	margin-top: 0.5em;

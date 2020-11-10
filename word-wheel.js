@@ -189,7 +189,13 @@ function build_found_words(already_found) {
 		span.textContent = word;
 		element.appendChild(span);
 
-		element.appendChild(document.createTextNode(` (${word_points(word)})`));
+		let points = word_points(word);
+		if (points > 0) {
+			let span = document.createElement("span");
+			span.setAttribute("class", "word-points");
+			span.textContent = ` (${word_points(word)})`;
+			element.appendChild(span);
+			}
 
 		if (is_pangram && found_words.includes(word))
 			num_pangrams_found += 1;
