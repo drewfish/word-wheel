@@ -193,7 +193,7 @@ function build_found_words(already_found) {
 		if (points > 0) {
 			let span = document.createElement("span");
 			span.setAttribute("class", "word-points");
-			span.textContent = ` (${word_points(word)})`;
+			span.textContent = `\u00A0(${word_points(word)})`;
 			element.appendChild(span);
 			}
 
