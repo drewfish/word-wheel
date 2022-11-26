@@ -25,6 +25,7 @@ var error_timeout_id = 0;
 var puzzle_url = "cur-puzzle";
 var dictionary_url_prefix = "https://en.wiktionary.org/wiki/";
 var logging_enabled = false;
+var local_storage_name = "word-wheel";
 
 
 function log(message) {
@@ -111,6 +112,7 @@ function enter_word() {
 		found_words.sort();
 		build_found_words(false);
 		clear_entered_word();
+		save_found_words();
 		}
 	}
 
@@ -370,7 +372,27 @@ function start_puzzle(text) {
 		});
 
 	build_wheel();
+	load_found_words();
 	}
+
+
+function load_found_words() {
+	let saved_words = JSON.parse(localStorage.getItem(local_storage_name));
+	if (!saved_words || saved_words.pangram != pangram || saved_words.key_letter != key_letter) {
+		// Not relevant, if it exists, it's probably for an old game.
+		localStorage.removeItem(local_storage_name);
+		return;
+		}
+
+	found_words = saved_words.found_words;
+	build_found_words();
+	}
+
+function save_found_words() {
+	let saved_words = { pangram, key_letter, found_words };
+	localStorage.setItem(local_storage_name, JSON.stringify(saved_words));
+	}
+
 
 function start_word_wheel() {
 	document.onkeydown = handle_key;
